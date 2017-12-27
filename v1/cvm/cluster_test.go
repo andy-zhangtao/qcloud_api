@@ -2,7 +2,7 @@ package cvm
 
 import (
 	"testing"
-	"github.com/andy-zhangtao/qcloud_api/public"
+	"github.com/andy-zhangtao/qcloud_api/v1/public"
 )
 
 func TestQueryCluster(t *testing.T) {
@@ -47,7 +47,7 @@ func TestGenerateSignature(t *testing.T) {
 	}
 	field, reqMap := q.queryCluster()
 	publicMap := public.PublicParam("DescribeInstances", "sh", "123456")
-	generateSignatureString(field, reqMap, publicMap)
+	public.GenerateSignatureString(field, reqMap, publicMap)
 	//if req != "Action=DescribeInstances&Nonce=827870&Region=sh&SecretId=123456&Timestamp=1514276701&clusterIds.n=cls-rfje0azd&clusterName=caas-test&limit=20&orderField=createdAt&orderType=desc&status=Running" {
 	//	t.Error("Req Generate Error!")
 	//}

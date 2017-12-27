@@ -2,11 +2,8 @@ package cvm
 
 import (
 	"strconv"
-	"github.com/andy-zhangtao/qcloud_api/public"
-	gz "github.com/andy-zhangtao/gogather/zsort"
-	"crypto/sha1"
-	"crypto/hmac"
-	"encoding/base64"
+	"github.com/andy-zhangtao/qcloud_api/v1/public"
+
 	"log"
 
 	"net/http"
@@ -137,21 +134,21 @@ func (this Cluster) queryClusterNode() ([]string, map[string]string) {
 func (this Cluster) QueryClusters() string {
 	field, reqmap := this.queryCluster()
 	pubMap := public.PublicParam(this.Pub.Action, this.Pub.Region, this.Pub.SecretId)
-	this.sign = generateSignatureString(field, reqmap, pubMap)
+	this.sign = public.GenerateSignatureString(field, reqmap, pubMap)
 	signStr := "GETccs.api.qcloud.com/v2/index.php?" + this.sign
-	sign := generateSignature(this.SecretKey, signStr)
+	sign := public.GenerateSignature(this.SecretKey, signStr)
 	reqURL := this.sign + "&Signature=" + sign
 
 	log.Println(reqURL)
 	return reqURL
 }
 
-func (this Cluster) QueryClusterNodes() (*ClusterNode,error) {
+func (this Cluster) QueryClusterNodes() (*ClusterNode, error) {
 	field, reqmap := this.queryClusterNode()
 	pubMap := public.PublicParam(this.Pub.Action, this.Pub.Region, this.Pub.SecretId)
-	this.sign = generateSignatureString(field, reqmap, pubMap)
+	this.sign = public.GenerateSignatureString(field, reqmap, pubMap)
 	signStr := "GETccs.api.qcloud.com/v2/index.php?" + this.sign
-	sign := generateSignature(this.SecretKey, signStr)
+	sign := public.GenerateSignature(this.SecretKey, signStr)
 	reqURL := this.sign + "&Signature=" + sign
 
 	resp, err := http.Get(API_URL + reqURL)
@@ -172,36 +169,4 @@ func (this Cluster) QueryClusterNodes() (*ClusterNode,error) {
 	}
 
 	return &cn, nil
-}
-
-// generateSignature 生成请求签名字符串
-// field 请求字段集合
-// reqmap 待计算的请求map
-// publicmap 公共请求map,调用public.PublicParam生成
-func generateSignatureString(field []string, reqmap, publicMap map[string]string) string {
-	field = append(field, public.PubilcField...)
-	field = gz.DictSort(field)
-	//log.Println(field)
-
-	req := ""
-	for k, v := range reqmap {
-		publicMap[k] = v
-	}
-	for i, key := range field {
-		if i == 0 {
-			req = key + "=" + publicMap[key]
-		} else {
-			req += "&" + key + "=" + publicMap[key]
-		}
-	}
-	return req
-}
-
-// generateSignature 生成最终的请求签名,使用HMAC-SHA1
-// key加密key，req请求字符串
-func generateSignature(key, req string) string {
-	k := []byte(key)
-	mac := hmac.New(sha1.New, k)
-	mac.Write([]byte(req))
-	return base64.StdEncoding.EncodeToString(mac.Sum(nil))
 }

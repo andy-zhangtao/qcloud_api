@@ -3,10 +3,10 @@ package service
 import (
 	"github.com/andy-zhangtao/qcloud_api/v1/public"
 	"strconv"
-	"log"
+	"net/http"
+	"io/ioutil"
+	"encoding/json"
 )
-
-const API_URL = "https://ccs.api.qcloud.com/v2/index.php?"
 
 type Svc struct {
 	Pub          public.Public `json:"pub"`
@@ -64,7 +64,7 @@ func (this Svc) querySampleInfo() ([]string, map[string]string) {
 }
 
 // QueryClusters 查询集群信息
-func (this Svc) QuerySampleInfo() string {
+func (this Svc) QuerySampleInfo() (*SvcSMData, error) {
 	field, reqmap := this.querySampleInfo()
 	pubMap := public.PublicParam(this.Pub.Action, this.Pub.Region, this.Pub.SecretId)
 	this.sign = public.GenerateSignatureString(field, reqmap, pubMap)
@@ -72,6 +72,22 @@ func (this Svc) QuerySampleInfo() string {
 	sign := public.GenerateSignature(this.SecretKey, signStr)
 	reqURL := this.sign + "&Signature=" + sign
 
-	log.Println(reqURL)
-	return reqURL
+	resp, err := http.Get(public.API_URL + reqURL)
+	if err != nil {
+		return nil, err
+	}
+
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var ssmd SvcSMData
+
+	err = json.Unmarshal(data, &ssmd)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ssmd, nil
 }

@@ -11,7 +11,6 @@ import (
 	"encoding/json"
 )
 
-const API_URL = "https://ccs.api.qcloud.com/v2/index.php?"
 
 type Cluster struct {
 	Pub        public.Public `json:"pub"`
@@ -151,7 +150,7 @@ func (this Cluster) QueryClusterNodes() (*ClusterNode, error) {
 	sign := public.GenerateSignature(this.SecretKey, signStr)
 	reqURL := this.sign + "&Signature=" + sign
 
-	resp, err := http.Get(API_URL + reqURL)
+	resp, err := http.Get(public.API_URL + reqURL)
 	if err != nil {
 		return nil, err
 	}

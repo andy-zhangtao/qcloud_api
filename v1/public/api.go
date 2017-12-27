@@ -8,6 +8,7 @@ import (
 	"crypto/sha1"
 	"encoding/base64"
 )
+const API_URL = "https://ccs.api.qcloud.com/v2/index.php?"
 
 type Public struct {
 	Action   string `json:"action"`

@@ -11,7 +11,7 @@ import (
 	"encoding/json"
 )
 
-
+var debug = false
 type Cluster struct {
 	Pub        public.Public `json:"pub"`
 	Cid        string        `json:"cid"`
@@ -150,6 +150,9 @@ func (this Cluster) QueryClusterNodes() (*ClusterNode, error) {
 	sign := public.GenerateSignature(this.SecretKey, signStr)
 	reqURL := this.sign + "&Signature=" + sign
 
+	if debug {
+		log.Println(public.API_URL + reqURL)
+	}
 	resp, err := http.Get(public.API_URL + reqURL)
 	if err != nil {
 		return nil, err
@@ -168,4 +171,8 @@ func (this Cluster) QueryClusterNodes() (*ClusterNode, error) {
 	}
 
 	return &cn, nil
+}
+
+func (this Cluster) SetDebug(isDebug bool){
+	debug = isDebug
 }

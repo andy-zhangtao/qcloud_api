@@ -6,8 +6,10 @@ import (
 	"net/http"
 	"io/ioutil"
 	"encoding/json"
+	"log"
 )
 
+var debug = false
 type Svc struct {
 	Pub          public.Public `json:"pub"`
 	ClusterId    string        `json:"cluster_id"`
@@ -72,6 +74,10 @@ func (this Svc) QuerySampleInfo() (*SvcSMData, error) {
 	sign := public.GenerateSignature(this.SecretKey, signStr)
 	reqURL := this.sign + "&Signature=" + sign
 
+	if debug {
+		log.Println(public.API_URL + reqURL)
+	}
+
 	resp, err := http.Get(public.API_URL + reqURL)
 	if err != nil {
 		return nil, err
@@ -90,4 +96,8 @@ func (this Svc) QuerySampleInfo() (*SvcSMData, error) {
 	}
 
 	return &ssmd, nil
+}
+
+func (this Svc) SetDebug(isDebug bool){
+	debug = isDebug
 }

@@ -68,7 +68,7 @@ func (this Svc) querySampleInfo() ([]string, map[string]string) {
 // QueryClusters 查询集群信息
 func (this Svc) QuerySampleInfo() (*SvcSMData, error) {
 	field, reqmap := this.querySampleInfo()
-	pubMap := public.PublicParam(this.Pub.Action, this.Pub.Region, this.Pub.SecretId)
+	pubMap := public.PublicParam("DescribeClusterService", this.Pub.Region, this.Pub.SecretId)
 	this.sign = public.GenerateSignatureString(field, reqmap, pubMap)
 	signStr := "GETccs.api.qcloud.com/v2/index.php?" + this.sign
 	sign := public.GenerateSignature(this.SecretKey, signStr)

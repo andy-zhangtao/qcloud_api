@@ -12,7 +12,7 @@ import (
 const API_URL = "https://ccs.api.qcloud.com/v2/index.php?"
 
 type Public struct {
-	Action   string `json:"action"`
+	//Action   string `json:"action"`
 	SecretId string `json:"secret_id"`
 	Region   string `json:"region"`
 }

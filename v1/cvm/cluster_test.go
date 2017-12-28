@@ -56,7 +56,6 @@ func TestGenerateSignature(t *testing.T) {
 func TestCluster_QueryClusters(t *testing.T) {
 	q := Cluster{
 		Pub: public.Public{
-			Action:   "DescribeInstances",
 			Region:   "sh",
 			SecretId: "123",
 		},
@@ -76,7 +75,6 @@ func TestCluster_QueryClusters(t *testing.T) {
 func TestCluster_QueryClusterNodes(t *testing.T) {
 	q := Cluster{
 		Pub: public.Public{
-			Action:   "DescribeClusterInstances",
 			Region:   "sh",
 			SecretId: "123",
 		},

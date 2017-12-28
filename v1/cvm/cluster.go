@@ -188,7 +188,7 @@ func (this Cluster) QueryClusters() (*ClusterInfo, error) {
 	}
 
 	field, reqmap := this.queryCluster()
-	pubMap := public.PublicParam(this.Pub.Action, this.Pub.Region, this.Pub.SecretId)
+	pubMap := public.PublicParam("DescribeCluster", this.Pub.Region, this.Pub.SecretId)
 	this.sign = public.GenerateSignatureString(field, reqmap, pubMap)
 	signStr := "GETccs.api.qcloud.com/v2/index.php?" + this.sign
 	sign := public.GenerateSignature(this.SecretKey, signStr)
@@ -222,7 +222,7 @@ func (this Cluster) QueryClusters() (*ClusterInfo, error) {
 
 func (this Cluster) QueryClusterNodes() (*ClusterNode, error) {
 	field, reqmap := this.queryClusterNode()
-	pubMap := public.PublicParam(this.Pub.Action, this.Pub.Region, this.Pub.SecretId)
+	pubMap := public.PublicParam("DescribeClusterInstances", this.Pub.Region, this.Pub.SecretId)
 	this.sign = public.GenerateSignatureString(field, reqmap, pubMap)
 	signStr := "GETccs.api.qcloud.com/v2/index.php?" + this.sign
 	sign := public.GenerateSignature(this.SecretKey, signStr)

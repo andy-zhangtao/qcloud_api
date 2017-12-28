@@ -9,9 +9,11 @@ import (
 	"net/http"
 	"io/ioutil"
 	"encoding/json"
+	"errors"
 )
 
 var debug = false
+
 type Cluster struct {
 	Pub        public.Public `json:"pub"`
 	Cid        string        `json:"cid"`
@@ -26,6 +28,8 @@ type Cluster struct {
 	sign       string
 }
 
+// http://json.golang.chinazt.cc/
+// 自动生成, 使用前请校验
 type ClusterNode_data_nodes struct {
 	InstanceId           string `json:"instanceid"`
 	InstanceName         string `json:"instancename"`
@@ -49,15 +53,62 @@ type ClusterNode_data_nodes struct {
 	Unschedulable        bool   `json:"unschedulable"`
 	Zone                 string `json:"zone"`
 }
+
+// http://json.golang.chinazt.cc/
+// 自动生成, 使用前请校验
 type ClusterNode_data struct {
 	TotalCount int                      `json:"totalcount"`
 	Nodes      []ClusterNode_data_nodes `json:"nodes"`
 }
+
+// http://json.golang.chinazt.cc/
+// 自动生成, 使用前请校验
 type ClusterNode struct {
 	Code     int              `json:"code"`
 	Message  string           `json:"message"`
 	CodeDesc string           `json:"codedesc"`
 	Data     ClusterNode_data `json:"data"`
+}
+
+// http://json.golang.chinazt.cc/
+// 自动生成, 使用前请校验
+type ClusterInfo_data_clusters struct {
+	ClusterId        string `json:"clusterid"`
+	ClusterName      string `json:"clustername"`
+	Description      string `json:"description"`
+	Status           string `json:"status"`
+	UnVpcId          string `json:"unvpcid"`
+	VpcId            int    `json:"vpcid"`
+	ClusterCIDR      string `json:"clustercidr"`
+	CreatedAt        string `json:"createdat"`
+	UpdatedAt        string `json:"updatedat"`
+	NodeStatus       string `json:"nodestatus"`
+	NodeNum          int    `json:"nodenum"`
+	Os               string `json:"os"`
+	TotalCpu         int    `json:"totalcpu"`
+	TotalMem         int    `json:"totalmem"`
+	RegionId         int    `json:"regionid"`
+	K8sVersion       string `json:"k8sversion"`
+	OpenHttps        int    `json:"openhttps"`
+	MasterLbSubnetId string `json:"masterlbsubnetid"`
+	ProjectId        int    `json:"projectid"`
+	Region           string `json:"region"`
+}
+
+// http://json.golang.chinazt.cc/
+// 自动生成, 使用前请校验
+type ClusterInfo_data struct {
+	TotalCount int                         `json:"totalcount"`
+	Clusters   []ClusterInfo_data_clusters `json:"clusters"`
+}
+
+// http://json.golang.chinazt.cc/
+// 自动生成, 使用前请校验
+type ClusterInfo struct {
+	Code     int              `json:"code"`
+	Message  string           `json:"message"`
+	CodeDesc string           `json:"codedesc"`
+	Data     ClusterInfo_data `json:"data"`
 }
 
 // queryCluster 查询集群数据API
@@ -130,7 +181,12 @@ func (this Cluster) queryClusterNode() ([]string, map[string]string) {
 }
 
 // QueryClusters 查询集群信息
-func (this Cluster) QueryClusters() string {
+func (this Cluster) QueryClusters() (*ClusterInfo, error) {
+
+	if this.SecretKey == "" {
+		return nil, errors.New("SecretKey Can not be empty!")
+	}
+
 	field, reqmap := this.queryCluster()
 	pubMap := public.PublicParam(this.Pub.Action, this.Pub.Region, this.Pub.SecretId)
 	this.sign = public.GenerateSignatureString(field, reqmap, pubMap)
@@ -138,8 +194,30 @@ func (this Cluster) QueryClusters() string {
 	sign := public.GenerateSignature(this.SecretKey, signStr)
 	reqURL := this.sign + "&Signature=" + sign
 
-	log.Println(reqURL)
-	return reqURL
+	if debug {
+		log.Println(public.API_URL + reqURL)
+		log.Println(this.SecretKey)
+		log.Println(signStr)
+		log.Println(sign)
+	}
+	resp, err := http.Get(public.API_URL + reqURL)
+	if err != nil {
+		return nil, err
+	}
+
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var cn ClusterInfo
+
+	err = json.Unmarshal(data, &cn)
+	if err != nil {
+		return nil, err
+	}
+
+	return &cn, nil
 }
 
 func (this Cluster) QueryClusterNodes() (*ClusterNode, error) {
@@ -173,6 +251,6 @@ func (this Cluster) QueryClusterNodes() (*ClusterNode, error) {
 	return &cn, nil
 }
 
-func (this Cluster) SetDebug(isDebug bool){
+func (this Cluster) SetDebug(isDebug bool) {
 	debug = isDebug
 }

@@ -230,10 +230,10 @@ func (this Service) createSvc() ([]string, map[string]string) {
 		for k := range c.Envs {
 			key := fmt.Sprintf("containers.%d.envs.%d.name", i, n)
 			field = append(field, key)
-			req[key] = url.QueryEscape(k)
+			req[key] = k
 			key = fmt.Sprintf("containers.%d.envs.%d.value", i, n)
 			field = append(field, key)
-			req[key] = url.QueryEscape(c.Envs[k])
+			req[key] = c.Envs[k]
 			n++
 		}
 

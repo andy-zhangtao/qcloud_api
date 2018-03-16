@@ -231,6 +231,7 @@ func (this Service) createSvc() ([]string, map[string]string) {
 	if this.AccessType != "" {
 		field = append(field, "accessType")
 		req["accessType"] = this.AccessType
+		field = append(field, "subnetId")
 		req["subnetId"] = this.SubnetId
 	}
 

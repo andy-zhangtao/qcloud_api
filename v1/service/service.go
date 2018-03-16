@@ -16,14 +16,14 @@ var debug = false
 
 const (
 	CREATE_SVC           = iota
-	UPGRADE_SVC          
-	DELETE_SVC           
-	REDEPLOY_SVC         
-	QUERYSVCINSTANCE     
-	QUERYSVCINFO         
-	DELETESVCINSTANCE    
-	MODIFYSVCINSTANCE    
-	DESCRIBESERVICEEVENT 
+	UPGRADE_SVC
+	DELETE_SVC
+	REDEPLOY_SVC
+	QUERYSVCINSTANCE
+	QUERYSVCINFO
+	DELETESVCINSTANCE
+	MODIFYSVCINSTANCE
+	DESCRIBESERVICEEVENT
 )
 
 type Svc struct {
@@ -49,7 +49,7 @@ type Service struct {
 	Instance     []string       `json:"instance"`
 	ScaleTo      int            `json:"scale_to"`
 	SecretKey    string
-	SubnetId     string         `json:"subnet_id"`
+	SubnetId     string         `json:"subnetId"`
 	sign         string
 }
 

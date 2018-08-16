@@ -11,6 +11,7 @@ import (
 
 const API_URL = "https://ccs.api.qcloud.com/v2/index.php?"
 const Repostiory_API_URL = "https://ccr.api.qcloud.com/v2/index.php?"
+const Monitor_API_URL = "https://monitor.api.qcloud.com/v2/index.php?"
 
 type Public struct {
 	//Action   string `json:"action"`
